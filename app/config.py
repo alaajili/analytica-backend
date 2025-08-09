@@ -1,12 +1,13 @@
-from pydantic import BaseModel
-import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import List
 
-class Settings(BaseModel):
-    allowed_origins: list[str] = []
+class Settings(BaseSettings):
+    allowed_origins: List[str] = []
+    max_upload_bytes: int = 25 * 1024 * 1024
+    max_preview_rows: int = 20
+    max_numeric_cols_for_corr: int = 12
+    use_pyarrow: bool = True
 
-def get_settings() -> Settings:
-    origins = os.getenv("ALLOWED_ORIGINS", "")
-    allowed = [o.strip() for o in origins.split(",") if o.strip()]
-    return Settings(allowed_origins=allowed)
+    model_config = SettingsConfigDict(env_prefix="", case_sensitive=False)
 
-settings = get_settings()
+settings = Settings()
